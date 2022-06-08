@@ -40,14 +40,17 @@ import kotlin.random.Random
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("test", "test2")
+
+        val data = JSONObject()
+        data.put("numOfElements", 0)
+
         setContent {
-            MyApp(this)
+            MyApp(this, data)
         }
 
         MainScope().launch {
             val con = DatasetConnection()
-            val randomize = con.sendAndReceive("test")
+            val randomize = con.sendAndReceive(data)
             con.close()
             this@MainActivity.recreate()
         }
@@ -57,7 +60,7 @@ class MainActivity : ComponentActivity() {
 class DatasetConnection: AutoCloseable {
 
     private var port = 1285;
-    private var hostAddress = "192.168.1.106"
+    private var hostAddress = "192.168.1.120"
 
     private var client: Socket? = null
     private var output: PrintWriter? = null
@@ -90,15 +93,13 @@ class DatasetConnection: AutoCloseable {
         }
     }
 
-    suspend fun sendAndReceive(data: String): Boolean {
+    suspend fun sendAndReceive(data: JSONObject): Boolean {
         withContext(Dispatchers.IO) {
-            val jsontext = JSONObject()
-            jsontext.put("button1", 111)
             delay(500)
             while(output == null) {
 
             }
-            output!!.println(jsontext.toString())
+            output!!.println(data.toString())
             while(true) {
                 val response = JSONObject(input!!.readLine())
                 Log.e("message from server", response.toString(4))
@@ -118,10 +119,9 @@ class DatasetConnection: AutoCloseable {
 }
 
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyApp(activity: ComponentActivity) {
+fun MyApp(activity: ComponentActivity, data: JSONObject) {
     // TODO collect data of all elements
     var dummy by remember { mutableStateOf(true) }
     var dark by remember { mutableStateOf(false) }
@@ -158,6 +158,7 @@ fun MyApp(activity: ComponentActivity) {
                 },
                 content = {
                     dummy
+
                     val deviceConfiguration = LocalConfiguration.current
                     val screenWidth = deviceConfiguration.screenWidthDp
                     val screenHeight = deviceConfiguration.screenHeightDp
@@ -181,6 +182,61 @@ fun MyApp(activity: ComponentActivity) {
                         modifier = Modifier
                             .size(buttonWidth.dp, buttonHeight.dp)
                             .absoluteOffset(buttonX.dp, buttonY.dp)
+                            .onGloballyPositioned { button ->
+                                val buttonData = JSONObject()
+
+                                val pos = JSONObject()
+                                pos.put("x",button.positionInWindow().x)
+                                pos.put("y", button.positionInWindow().y)
+                                buttonData.put("pos", pos)
+
+                                val size = JSONObject()
+                                size.put("x", button.size.width)
+                                size.put("y", button.size.height)
+                                buttonData.put("size", size)
+
+                                data.put(data.get("numOfElements").toString(), buttonData)
+                                data.put("numOfElements", data.get("numOfElements").toString().toInt() + 1)
+                            }
+                    )
+
+                    val buttonWidth1 = screenWidth.times(Random.nextFloat())
+                    val buttonHeight1 = screenHeight.times(Random.nextFloat())
+
+                    val buttonX1 = screenWidth.minus(buttonWidth).times(Random.nextFloat())
+                    val buttonY1 = screenHeight.minus(buttonHeight).times(Random.nextFloat())
+
+                    Button(
+
+                        enabled = Random.nextBoolean(),
+                        onClick = {
+                            dummy = !dummy
+                            dark = !dark
+                        },
+                        content = {
+                            Text(Random.nextBoolean().toString())
+                        },
+                        modifier = Modifier
+                            .size(buttonWidth1.dp, buttonHeight1.dp)
+                            .absoluteOffset(buttonX1.dp, buttonY1.dp)
+                            .onGloballyPositioned { button ->
+                                val buttonData = JSONObject()
+
+                                buttonData.put("type", "button")
+
+                                val pos = JSONObject()
+                                pos.put("x",button.positionInWindow().x)
+                                pos.put("y", button.positionInWindow().y)
+                                buttonData.put("pos", pos)
+
+                                val size = JSONObject()
+                                size.put("x", button.size.width)
+                                size.put("y", button.size.height)
+                                buttonData.put("size", size)
+
+                                data.put(data.get("numOfElements").toString(), buttonData)
+                                data.put("numOfElements", data.get("numOfElements").toString().toInt() + 1)
+                            }
                     )
                 }
             )
