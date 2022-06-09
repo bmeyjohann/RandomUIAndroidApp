@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.app.Application
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -42,7 +43,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val data = JSONObject()
-        data.put("numOfElements", 0)
 
         setContent {
             MyApp(this, data)
@@ -123,16 +123,13 @@ class DatasetConnection: AutoCloseable {
 @Composable
 fun MyApp(activity: ComponentActivity, data: JSONObject) {
     // TODO collect data of all elements
-    var dummy by remember { mutableStateOf(true) }
     var dark by remember { mutableStateOf(false) }
-    dummy
     val scheme = if(dark) DarkColorScheme else LightColorScheme
     MaterialTheme(
         colorScheme = scheme,
         content = {
             Scaffold(
                 bottomBar = {
-                    dummy
                     if (true) {
                         val numOfEntries = Random.nextInt(3, 6)
                         val selectedEntry = Random.nextInt(1, numOfEntries + 1)
@@ -149,7 +146,6 @@ fun MyApp(activity: ComponentActivity, data: JSONObject) {
                                     /* TODO Randomize label and icon. Also no icon or no label.  */
                                     label = { Text(text = "test$i" + Random.nextBoolean().toString()) },
                                     onClick = {
-                                        dummy= !dummy
                                     }
                                 )
                             }
@@ -157,23 +153,38 @@ fun MyApp(activity: ComponentActivity, data: JSONObject) {
                     }
                 },
                 content = {
-                    dummy
-
                     val deviceConfiguration = LocalConfiguration.current
-                    val screenWidth = deviceConfiguration.screenWidthDp
-                    val screenHeight = deviceConfiguration.screenHeightDp
+                    val appWidth = deviceConfiguration.screenWidthDp
+                    val appHeight = deviceConfiguration.screenHeightDp
 
-                    val buttonWidth = screenWidth.times(Random.nextFloat())
-                    val buttonHeight = screenHeight.times(Random.nextFloat())
+                    val id = "button_test"
 
-                    val buttonX = screenWidth.minus(buttonWidth).times(Random.nextFloat())
-                    val buttonY = screenHeight.minus(buttonHeight).times(Random.nextFloat())
+                    val buttonWidth = appWidth.times(Random.nextFloat())
+                    val buttonHeight = appHeight.times(Random.nextFloat())
+
+                    val buttonX = appWidth.minus(buttonWidth).times(Random.nextFloat())
+                    val buttonY = appHeight.minus(buttonHeight).times(Random.nextFloat())
+
+                    val buttonData = JSONObject()
+
+                    val pos = JSONObject()
+                    pos.put("x",buttonX / appWidth)
+                    pos.put("y", buttonY / appHeight)
+                    buttonData.put("pos", pos)
+
+                    val size = JSONObject()
+                    size.put("x", buttonWidth / appWidth)
+                    size.put("y", buttonHeight / appHeight)
+                    buttonData.put("size", size)
+
+                    Log.e("test", buttonData.toString(4))
+
+                    data.put(id, buttonData)
 
                     Button(
 
                         enabled = Random.nextBoolean(),
                         onClick = {
-                            dummy = !dummy
                             dark = !dark
                         },
                         content = {
@@ -182,61 +193,39 @@ fun MyApp(activity: ComponentActivity, data: JSONObject) {
                         modifier = Modifier
                             .size(buttonWidth.dp, buttonHeight.dp)
                             .absoluteOffset(buttonX.dp, buttonY.dp)
-                            .onGloballyPositioned { button ->
-                                val buttonData = JSONObject()
-
-                                val pos = JSONObject()
-                                pos.put("x",button.positionInWindow().x)
-                                pos.put("y", button.positionInWindow().y)
-                                buttonData.put("pos", pos)
-
-                                val size = JSONObject()
-                                size.put("x", button.size.width)
-                                size.put("y", button.size.height)
-                                buttonData.put("size", size)
-
-                                data.put(data.get("numOfElements").toString(), buttonData)
-                                data.put("numOfElements", data.get("numOfElements").toString().toInt() + 1)
-                            }
-                    )
-
-                    val buttonWidth1 = screenWidth.times(Random.nextFloat())
-                    val buttonHeight1 = screenHeight.times(Random.nextFloat())
-
-                    val buttonX1 = screenWidth.minus(buttonWidth).times(Random.nextFloat())
-                    val buttonY1 = screenHeight.minus(buttonHeight).times(Random.nextFloat())
-
-                    Button(
-
-                        enabled = Random.nextBoolean(),
-                        onClick = {
-                            dummy = !dummy
-                            dark = !dark
-                        },
-                        content = {
-                            Text(Random.nextBoolean().toString())
-                        },
-                        modifier = Modifier
-                            .size(buttonWidth1.dp, buttonHeight1.dp)
-                            .absoluteOffset(buttonX1.dp, buttonY1.dp)
-                            .onGloballyPositioned { button ->
-                                val buttonData = JSONObject()
-
-                                buttonData.put("type", "button")
-
-                                val pos = JSONObject()
-                                pos.put("x",button.positionInWindow().x)
-                                pos.put("y", button.positionInWindow().y)
-                                buttonData.put("pos", pos)
-
-                                val size = JSONObject()
-                                size.put("x", button.size.width)
-                                size.put("y", button.size.height)
-                                buttonData.put("size", size)
-
-                                data.put(data.get("numOfElements").toString(), buttonData)
-                                data.put("numOfElements", data.get("numOfElements").toString().toInt() + 1)
-                            }
+//                            .onGloballyPositioned { button ->
+//                                val buttonData = JSONObject()
+//
+//                                val pos12 = JSONObject()
+//                                pos12.put("x",appWidth)
+//                                pos12.put("y", appHeight)
+//                                buttonData.put("app", pos12)
+//
+//                                val pos1 = JSONObject()
+//                                pos1.put("x",button.positionInWindow().x)
+//                                pos1.put("y", button.positionInWindow().y)
+//                                buttonData.put("pos_abs", pos1)
+//
+//                                val size1 = JSONObject()
+//                                size1.put("x", button.size.width.toFloat())
+//                                size1.put("y", button.size.height.toFloat())
+//                                buttonData.put("size_abs", size1)
+//
+//                                val pos = JSONObject()
+//                                pos.put("x",button.positionInWindow().x.dp / appWidth)
+//                                pos.put("y", button.positionInWindow().y.dp / appHeight)
+//                                buttonData.put("pos", pos)
+//
+//                                val size = JSONObject()
+//                                size.put("x", button.size.width.toFloat().dp / appWidth)
+//                                size.put("y", button.size.height.toFloat().dp / appHeight)
+//                                buttonData.put("size", size)
+//
+//                                Log.e("test", buttonData.toString(4))
+//
+//                                data.put(data.get("numOfElements").toString(), buttonData)
+//                                data.put("numOfElements", data.get("numOfElements").toString().toInt() + 1)
+//                            }
                     )
                 }
             )
