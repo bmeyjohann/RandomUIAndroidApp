@@ -38,6 +38,10 @@ import java.net.ServerSocket
 import java.net.Socket
 import kotlin.random.Random
 
+enum class Visibility {
+    SHOW, HIDE, WHITE, BLACK
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +49,7 @@ class MainActivity : ComponentActivity() {
         val data = JSONObject()
 
         setContent {
-            MyApp(this, data)
+            RandomApp(this, data)
         }
 
         MainScope().launch {
@@ -121,7 +125,7 @@ class DatasetConnection: AutoCloseable {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyApp(activity: ComponentActivity, data: JSONObject) {
+fun RandomApp(activity: ComponentActivity, data: JSONObject) {
     // TODO collect data of all elements
     var dark by remember { mutableStateOf(false) }
     val scheme = if(dark) DarkColorScheme else LightColorScheme
@@ -129,29 +133,7 @@ fun MyApp(activity: ComponentActivity, data: JSONObject) {
         colorScheme = scheme,
         content = {
             Scaffold(
-                bottomBar = {
-                    if (true) {
-                        val numOfEntries = Random.nextInt(3, 6)
-                        val selectedEntry = Random.nextInt(1, numOfEntries + 1)
-                        NavigationBar {
-                            for (i in 1..numOfEntries) {
-                                NavigationBarItem(
-                                    selected = i == selectedEntry,
-                                    icon = {
-                                        Icon(
-                                            Icons.Filled.Favorite,
-                                            contentDescription = null
-                                        )
-                                    },
-                                    /* TODO Randomize label and icon. Also no icon or no label.  */
-                                    label = { Text(text = "test$i" + Random.nextBoolean().toString()) },
-                                    onClick = {
-                                    }
-                                )
-                            }
-                        }
-                    }
-                },
+                bottomBar = { RandomBottomBar(Visibility.SHOW) },
                 content = {
                     val deviceConfiguration = LocalConfiguration.current
                     val appWidth = deviceConfiguration.screenWidthDp
@@ -234,4 +216,29 @@ fun MyApp(activity: ComponentActivity, data: JSONObject) {
 
         // TODO send data of all elements, since ui should now be rendered
         // TODO randomize rotation, theme...
+}
+
+@Composable
+fun RandomBottomBar(v: Visibility) {
+    val numOfEntries by remember { mutableStateOf(Random.nextInt(3, 6)) }
+    val selectedEntry = Random.nextInt(1, numOfEntries + 1)
+    if(v != Visibility.HIDE) {
+        NavigationBar {
+            for (i in 1..numOfEntries) {
+                NavigationBarItem(
+                    selected = i == selectedEntry,
+                    icon = {
+                        Icon(
+                            Icons.Filled.Favorite,
+                            contentDescription = null
+                        )
+                    },
+                    /* TODO Randomize label and icon. Also no icon or no label.  */
+                    label = { Text(text = "test$i" + Random.nextBoolean().toString()) },
+                    onClick = {
+                    }
+                )
+            }
+        }
+    }
 }
