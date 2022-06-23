@@ -210,8 +210,7 @@ fun RandomButton(state: State) {
             onClick = {},
             content = {
                 Text(Random.nextBoolean().toString())
-            },
-            colors = ButtonDefaults.buttonColors(Color.Black)
+            }
         )
     }
 

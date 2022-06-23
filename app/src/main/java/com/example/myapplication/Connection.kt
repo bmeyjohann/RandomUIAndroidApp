@@ -1,17 +1,21 @@
 package com.example.myapplication
 
 import android.util.Log
+import android.util.LogPrinter
 import kotlinx.coroutines.*
+import org.json.JSONException
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
 
+var connection: DatasetConnection? = null
+
 class DatasetConnection: AutoCloseable {
 
-    private var port = 1285;
-    private var hostAddress = "192.168.1.120"
+    private var port = 1282
+    private var hostAddress = "192.168.1.106"
 
     private var client: Socket? = null
     private var output: PrintWriter? = null
@@ -35,7 +39,9 @@ class DatasetConnection: AutoCloseable {
     private suspend fun open(port: Int, hostAddress: String) {
         withContext(Dispatchers.IO) {
             try {
-                client = Socket(hostAddress, port)
+                while(client == null) {
+                    client = Socket(hostAddress, port)
+                }
                 output = PrintWriter(client!!.getOutputStream(), true)
                 input = BufferedReader(InputStreamReader(client!!.getInputStream()))
             } catch (e: Exception) {
@@ -44,20 +50,23 @@ class DatasetConnection: AutoCloseable {
         }
     }
 
-    suspend fun sendAndReceive(data: JSONObject): Boolean {
-        withContext(Dispatchers.IO) {
-            delay(500)
-            while(output == null) {
+    suspend fun sendAndReceive(data: JSONObject): JSONObject {
+        var response = JSONObject()
 
-            }
+        withContext(Dispatchers.IO) {
+            while(output == null) {}
             output!!.println(data.toString())
-            while(true) {
-                val response = JSONObject(input!!.readLine())
-                Log.e("message from server", response.toString(4))
-                return@withContext response.get("answer") == "randomize"
+            // TODO check if while is necessary
+            while(response.length() == 0) {
+                try {
+                    response = JSONObject(input!!.readLine())
+                    Log.e("message from server", response.toString(4))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
-        return false
+        return response
     }
 
     override fun close() {
