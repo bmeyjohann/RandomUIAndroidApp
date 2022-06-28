@@ -7,13 +7,14 @@ import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 
 class Registry {
-    var numOfElements = 0
+    var numOfElements = -1
     val data = JSONObject()
     fun registerElement(type: String): Int {
         data.put(numOfElements.toString(), JSONObject().put("class", type))
         Log.d("Registry", data.toString(2))
         return numOfElements++
     }
+
     fun addMask(bitmap: Bitmap, idOfElement: Int) {
         val baos = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)

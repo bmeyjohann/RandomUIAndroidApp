@@ -38,6 +38,8 @@ import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
 
+    var triggerNextState: () -> Unit = {}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -55,21 +57,21 @@ class MainActivity : ComponentActivity() {
                 val message = JSONObject().put("answer", "ready")
                 val answer = connection!!.sendAndReceive(message)
                 if (answer.get("answer").equals("masks")) {
-                    masks = true
-                    Log.d("answer: masks", masks.toString())
+                    Log.d("answer: masks", "triggerNextState")
+                    triggerNextState()
                 } else {
                     connection!!.close()
                     this@MainActivity.recreate()
                 }
             }
-        },100)
+        },250)
     }
 }
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RandomApp(activity: ComponentActivity) {
+fun RandomApp(activity: MainActivity) {
     // TODO collect data of all elements
     var state by remember { mutableStateOf(State(activity))}
     state.onStateChanged = {
