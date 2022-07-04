@@ -15,7 +15,7 @@ var connection: DatasetConnection? = null
 class DatasetConnection: AutoCloseable {
 
     private var port = 1281
-    private var hostAddress = "192.168.1.100"
+    private var hostAddress = "192.168.1.186"
 
     private var client: Socket? = null
     private var output: PrintWriter? = null

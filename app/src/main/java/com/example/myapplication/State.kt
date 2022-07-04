@@ -51,14 +51,8 @@ class State {
             if (!mask) {
                 mask = true
                 onStateChanged()
-                Log.d("State", "Mask: $mask, idOfMaskElement: $idOfMaskElement, Registry.numOfElements: ${registry.numOfElements}")
             } else if(idOfMaskElement < registry.numOfElements) {
-                Log.d("Registry", registry.data.toString(2))
                 onStateChanged()
-                Log.d(
-                    "State",
-                    "Mask: $mask, idOfMaskElement: $idOfMaskElement, Registry.numOfElements: ${registry.numOfElements}"
-                )
             } else {
                 MainScope().launch {
                     val message = this@State.registry.data

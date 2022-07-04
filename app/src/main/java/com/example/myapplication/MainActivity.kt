@@ -48,10 +48,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             RandomApp(this)
         }
-    }
-
-    override fun onWindowFocusChanged(hasFocus: Boolean) {
-        super.onWindowFocusChanged(hasFocus)
         Handler(Looper.getMainLooper()).postDelayed({
             MainScope().launch {
                 val message = JSONObject().put("answer", "ready")
