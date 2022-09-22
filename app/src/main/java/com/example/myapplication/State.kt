@@ -26,13 +26,6 @@ class State {
         }
 
         registry.registerElement("screen")
-
-        /*MainScope().launch {
-                while (!masks) {
-                }
-                masks = false
-                this@State.nextState()
-        }*/
     }
 
     // copy constructor
