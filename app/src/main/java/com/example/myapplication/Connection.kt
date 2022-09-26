@@ -1,79 +1,115 @@
 package com.example.myapplication
 
-import android.util.Log
-import android.util.LogPrinter
-import kotlinx.coroutines.*
-import org.json.JSONException
+import android.app.Activity
+import androidx.annotation.MainThread
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
+import java.net.ServerSocket
 import java.net.Socket
 
 var connection: DatasetConnection? = null
 
 class DatasetConnection: AutoCloseable {
 
-    private var port = 1281
-    private var hostAddress = "192.168.1.105"
+    private var port = 1280
 
+    private var server: ServerSocket? = null
     private var client: Socket? = null
-    private var output: PrintWriter? = null
     private var input: BufferedReader? = null
+    private var output: PrintWriter? = null
 
-    constructor() {
-        this.open()
-    }
+    private var state: State? = null
+    private var activity: Activity? = null
 
-    constructor(port: Int, hostAddress: String) {
-        this.port = port
-        this.hostAddress = hostAddress
+    constructor(state: State, activity: Activity) {
+        this.state = state
+        this.activity = activity
 
-        this.open()
-    }
+        this.server = ServerSocket(port)
 
-    private fun open() {
-        MainScope().launch { open(port, hostAddress) }
-    }
-
-    private suspend fun open(port: Int, hostAddress: String) {
-        withContext(Dispatchers.IO) {
-            try {
-                while(client == null) {
-                    client = Socket(hostAddress, port)
-                }
-                output = PrintWriter(client!!.getOutputStream(), true)
-                input = BufferedReader(InputStreamReader(client!!.getInputStream()))
-            } catch (e: Exception) {
-                e.printStackTrace()
+        MainScope().launch {
+            withContext(Dispatchers.IO) {
+                this@DatasetConnection.listenForever()
             }
         }
     }
 
-    suspend fun sendAndReceive(data: JSONObject): JSONObject {
-        var response = JSONObject()
+    private fun listenForever() {
+        while (true) {
+            this.establishConnection()
 
-        withContext(Dispatchers.IO) {
-            while(output == null) {}
-            output!!.println(data.toString())
-            // TODO check if while is necessary
-            while(response.length() == 0) {
-                try {
-                    response = JSONObject(input!!.readLine())
-                    Log.e("message from server", response.toString(4))
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            val request = JSONObject(this.input!!.readLine())
+
+            if(request.get("header").equals("ready?")) {
+                this.sendResponse("ready!")
+            } else if(request.get("header").equals("masks?")) {
+                this.sendResponse("masks!", this.state!!.registry.data)
+            } else if(request.get("header").equals("next state?")) {
+                this.state!!.nextState()
+                this.sendResponse("next state!", JSONObject().put("masks", this.state!!.mask).put("idOfMaskElement", this.state!!.idOfMaskElement))
+            } else if(request.get("header").equals("randomize")) {
+                this.sendResponse("randomize!")
+            }
+
+            this.closeClientConnection()
+
+            if (request.get("header").equals("randomize")) {
+                this.close()
+                MainScope().launch {
+                    withContext(Dispatchers.Main) {
+                        activity!!.recreate()
+                    }
                 }
+                break
             }
         }
-        return response
+    }
+
+    private fun sendResponse(header: Any, body: Any? = null) {
+        val response = JSONObject()
+        response.put("header", header)
+        if (body != null) {
+            response.put("body", body)
+        }
+        this.output!!.println(response.toString())
+    }
+    private fun establishConnection() {
+        this.client = this.server!!.accept()
+
+        this.input = BufferedReader(InputStreamReader(this.client!!.getInputStream()))
+        this.output = PrintWriter(this.client!!.getOutputStream(), true)
+    }
+
+    private fun closeClientConnection() {
+        if (this.client != null) {
+            this.client!!.close()
+        }
+        if (this.input != null) {
+            this.input!!.close()
+        }
+        if (this.output != null) {
+            this.output!!.close()
+        }
     }
 
     override fun close() {
-        try {
-            client!!.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        this.closeClientConnection()
+        if (this.server != null) {
+            this.server!!.close()
         }
+    }
+
+    fun isClosed(): Boolean {
+        return this.server!!.isClosed
+    }
+
+    fun setState(state: State) {
+        this.state = state
     }
 }

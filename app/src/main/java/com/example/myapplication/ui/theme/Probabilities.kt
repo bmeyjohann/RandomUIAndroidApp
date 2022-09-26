@@ -1,6 +1,6 @@
 package com.example.myapplication.ui.theme
 
-const val debug = true
+const val debug = false
 
 const val probTopAppBar = 1f
 const val probBottomBar = 0.8f

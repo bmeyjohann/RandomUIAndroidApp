@@ -39,22 +39,11 @@ class State {
     }
 
     fun nextState() {
-        Handler(Looper.getMainLooper()).postDelayed({
-            registry.addMask(screenshot(activity!!.window.decorView.rootView), idOfMaskElement++)
-            if (!mask) {
-                mask = true
-                onStateChanged()
-            } else if(idOfMaskElement < registry.numOfElements) {
-                onStateChanged()
-            } else {
-                MainScope().launch {
-                    val message = this@State.registry.data
-                    val answer = connection!!.sendAndReceive(message)
-                    connection!!.close()
-                    this@State.activity!!.recreate()
-                }
-            }
-        }, 20)
+        if (!mask) {
+            mask = true
+        }
+        this.idOfMaskElement++
+        onStateChanged()
     }
 
     fun copy(): State {

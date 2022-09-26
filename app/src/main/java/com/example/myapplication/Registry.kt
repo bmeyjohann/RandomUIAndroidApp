@@ -11,7 +11,6 @@ class Registry {
     val data = JSONObject()
     fun registerElement(type: String): Int {
         data.put(numOfElements.toString(), JSONObject().put("class", type))
-        Log.d("Registry", data.toString(2))
         return numOfElements++
     }
 

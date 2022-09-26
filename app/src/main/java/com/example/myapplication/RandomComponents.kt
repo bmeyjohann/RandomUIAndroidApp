@@ -54,7 +54,7 @@ fun RandomBottomBar(state: State) {
     if(visible) {
         NavigationBar {
             for (i in 1..numOfEntries) {
-                RandomNavigationBarItem(i == selectedEntry, iconsAndText, state)
+                RandomNavigationBarItem(i == selectedEntry, 1, state)
             }
         }
     }
@@ -82,14 +82,13 @@ fun RowScope.RandomNavigationBarItem(selected: Boolean, iconsAndText: Int, state
                     if(iconsAndText > 0) {
                         Text(
                             text = text,
-                            color = Color.Black
+                            color = Color.White
                         )
                     }
                         },
                 onClick = {},
-                alwaysShowLabel = false,
-                colors = NavigationBarItemDefaults.colors(Color.Black),
-                modifier = Modifier.background(Color.Black)
+                colors = NavigationBarItemDefaults.colors(Color.White),
+                modifier = Modifier.background(Color.White)
             )
         } else {
             NavigationBarItem(
@@ -107,13 +106,12 @@ fun RowScope.RandomNavigationBarItem(selected: Boolean, iconsAndText: Int, state
                     if(iconsAndText > 0) {
                         Text(
                             text = text,
-                            color = Color.White
+                            color = Color.Black
                         )
                     }
                 },
                 onClick = {},
-                alwaysShowLabel = false,
-                colors = NavigationBarItemDefaults.colors(Color.White)
+                colors = NavigationBarItemDefaults.colors(Color.Black)
             )
         }
     } else {
@@ -135,9 +133,8 @@ fun RowScope.RandomNavigationBarItem(selected: Boolean, iconsAndText: Int, state
                     )
                 }
             },
-            alwaysShowLabel = false,
             onClick = {},
-            modifier = Modifier.onCondition(state.mask && id == state.idOfMaskElement, Modifier.background(Color.Black))
+            modifier = Modifier.onCondition(state.mask && id == state.idOfMaskElement, Modifier.background(Color.White))
         )
     }
 }
@@ -152,15 +149,15 @@ fun RandomFloatingActionButton(state: State) {
             if(state.idOfMaskElement == id) {
                 FloatingActionButton(
                     onClick = {},
-                    containerColor = Color.Black,
-                    contentColor = Color.Black,
+                    containerColor = Color.White,
+                    contentColor = Color.White,
                     elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp)
                 ) {}
             } else {
                 FloatingActionButton(
                     onClick = {},
-                    containerColor = Color.White,
-                    contentColor = Color.White,
+                    containerColor = Color.Black,
+                    contentColor = Color.Black,
                     elevation = FloatingActionButtonDefaults.elevation(0.dp, 0.dp)
                 ) {}
             }
@@ -194,7 +191,7 @@ fun RandomTopAppBar(state: State) {
 
                 IconButton(
                     onClick = {},
-                    modifier = Modifier.then(if(state.mask && id == state.idOfMaskElement) Modifier.background(Color.Black) else Modifier)
+                    modifier = Modifier.then(if(state.mask && id == state.idOfMaskElement) Modifier.background(Color.White) else Modifier)
                 ) {
                     RandomIcon(
                         state,
@@ -208,7 +205,7 @@ fun RandomTopAppBar(state: State) {
 
                 IconButton(
                     onClick = {},
-                    modifier = Modifier.then(if(state.mask && id == state.idOfMaskElement) Modifier.background(Color.Black) else Modifier)
+                    modifier = Modifier.then(if(state.mask && id == state.idOfMaskElement) Modifier.background(Color.White) else Modifier)
                 ) {
                     RandomIcon(
                         state,
@@ -245,18 +242,18 @@ fun RandomButton(state: State) {
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                         }
-                        Text(text, color = Color.Black)
+                        Text(text, color = Color.White)
                     },
-                    colors = ButtonDefaults.buttonColors(Color.Black),
+                    colors = ButtonDefaults.buttonColors(Color.White),
                     modifier = Modifier.onCondition(fillAvailableSpace, Modifier.fillMaxWidth(1.0f))
                 )
             } else {
                 TextButton(
                     enabled = true,
-                    colors = ButtonDefaults.buttonColors(Color.Black),
+                    colors = ButtonDefaults.buttonColors(Color.White),
                     onClick = {},
                     content = {
-                        Text(text, color = Color.Black)
+                        Text(text, color = Color.White)
                     }
                 )
             }
@@ -275,18 +272,18 @@ fun RandomButton(state: State) {
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                         }
-                        Text(text, color = Color.White)
+                        Text(text, color = Color.Black)
                     },
-                    colors = ButtonDefaults.buttonColors(Color.White),
+                    colors = ButtonDefaults.buttonColors(Color.Black),
                     modifier = Modifier.onCondition(fillAvailableSpace, Modifier.fillMaxWidth(1.0f))
                 )
             } else {
                 TextButton(
                     enabled = true,
-                    colors = ButtonDefaults.buttonColors(Color.White),
+                    colors = ButtonDefaults.buttonColors(Color.Black),
                     onClick = {},
                     content = {
-                        Text(text, color = Color.White)
+                        Text(text, color = Color.Black)
                     }
                 )
             }
@@ -361,10 +358,10 @@ fun RandomCheckbox(state: State) {
                     checked = true,
                     onCheckedChange = null,
                     colors = CheckboxDefaults.colors(
-                        checkedColor = Color.Black,
-                        uncheckedColor = Color.Black,
-                        checkmarkColor = Color.Black,
-                        disabledIndeterminateColor = Color.Black
+                        checkedColor = Color.White,
+                        uncheckedColor = Color.White,
+                        checkmarkColor = Color.White,
+                        disabledIndeterminateColor = Color.White
                     )
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
@@ -379,10 +376,10 @@ fun RandomCheckbox(state: State) {
                     checked = checked,
                     onCheckedChange = null,
                     colors = CheckboxDefaults.colors(
-                        checkedColor = Color.White,
-                        uncheckedColor = Color.White,
-                        checkmarkColor = Color.White,
-                        disabledIndeterminateColor = Color.White
+                        checkedColor = Color.Black,
+                        uncheckedColor = Color.Black,
+                        checkmarkColor = Color.Black,
+                        disabledIndeterminateColor = Color.Black
                     )
                 )
                 Spacer(modifier = Modifier.padding(5.dp))
@@ -419,10 +416,10 @@ fun RandomRadioButton(state: State) {
                     selected = false,
                     onClick = {},
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = Color.Black,
-                        unselectedColor = Color.Black
+                        selectedColor = Color.White,
+                        unselectedColor = Color.White
                     ),
-                    modifier = Modifier.background(Color.Black)
+                    modifier = Modifier.background(Color.White)
                 )
                 Text(text = text)
             }
@@ -434,8 +431,8 @@ fun RandomRadioButton(state: State) {
                     selected = true,
                     onClick = {},
                     colors = RadioButtonDefaults.colors(
-                        selectedColor = Color.White,
-                        unselectedColor = Color.White
+                        selectedColor = Color.Black,
+                        unselectedColor = Color.Black
                     )
                 )
                 Text(text = text)
@@ -466,10 +463,10 @@ fun RandomSwitch(state: State) {
                 checked = checked,
                 onCheckedChange = {},
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.Black,
-                    checkedTrackColor = Color.Black,
-                    uncheckedThumbColor = Color.Black,
-                    uncheckedTrackColor = Color.Black
+                    checkedThumbColor = Color.White,
+                    checkedTrackColor = Color.White,
+                    uncheckedThumbColor = Color.White,
+                    uncheckedTrackColor = Color.White
                 )
             )
         } else {
@@ -477,10 +474,10 @@ fun RandomSwitch(state: State) {
                 checked = checked,
                 onCheckedChange = {},
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Color.White,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color.White
+                    checkedThumbColor = Color.Black,
+                    checkedTrackColor = Color.Black,
+                    uncheckedThumbColor = Color.Black,
+                    uncheckedTrackColor = Color.Black
                 )
             )
         }
@@ -499,14 +496,14 @@ fun RandomIcon(state: State, id: Int, iconToDisplay: ImageVector, modifier: Modi
             Icon(
                 imageVector = iconToDisplay,
                 contentDescription = null,
-                tint = Color.Black,
+                tint = Color.White,
                 modifier = modifier
             )
         } else {
             Icon(
                 imageVector = iconToDisplay,
                 contentDescription = null,
-                tint = Color.White,
+                tint = Color.Black,
                 modifier = modifier
             )
         }
