@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import android.graphics.Bitmap
 import android.view.View
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.core.graphics.applyCanvas
 import kotlin.random.Random
@@ -24,8 +25,13 @@ fun probsToIndex(vararg probabilities: Float): Int {
     throw Exception("Could not convert probabilities to index.")
 }
 
-fun randomText(numMaxWords: Int, numMaxCharsPerWord: Int): String {
+fun randomText(numMaxWords: Int, numMaxCharsPerWord: Int, allowEmptyString: Boolean = false): String {
     var string = ""
+
+    if(allowEmptyString && Random.nextBoolean()) {
+        return string
+    }
+
     for(numWords in 1..numMaxWords) {
         if(string.isNotEmpty()) {
             string += " "
@@ -56,5 +62,29 @@ fun screenshot(view: View): Bitmap {
     return Bitmap.createBitmap(view.width, view.height,
         Bitmap.Config.ARGB_8888).applyCanvas {
         view.draw(this)
+    }
+}
+
+fun clipIntInclusive(value: Int, lowerBound: Int, upperBound: Int): Int {
+    return if (value < lowerBound) {
+        lowerBound
+    } else if (value > upperBound) {
+        upperBound
+    } else {
+        value
+    }
+}
+
+fun randomHorizontalAlignment(): Alignment.Horizontal {
+    when(Random.nextInt(3)) {
+        0 -> {
+            return Alignment.Start
+        }
+        1 -> {
+            return Alignment.CenterHorizontally
+        }
+        else -> {
+            return Alignment.End
+        }
     }
 }

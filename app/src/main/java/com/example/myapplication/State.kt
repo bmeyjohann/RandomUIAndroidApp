@@ -1,19 +1,11 @@
 package com.example.myapplication
 
-import android.app.Activity
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
-import kotlinx.coroutines.*
-import org.json.JSONObject
-
 
 class State {
     var mask = false
     var idOfMaskElement = -1
-    var material3 = true
 
-    var activity: MainActivity?
+    private var activity: MainActivity?
     var registry = Registry()
 
     var onStateChanged: () -> Unit = {}
@@ -29,11 +21,10 @@ class State {
     }
 
     // copy constructor
-    constructor(activity: MainActivity, mask: Boolean, idOfMaskElement: Int, material3: Boolean, registry: Registry, onStateChanged: () -> Unit) {
+    constructor(activity: MainActivity, mask: Boolean, idOfMaskElement: Int, registry: Registry, onStateChanged: () -> Unit) {
         this.activity = activity
         this.mask = mask
         this.idOfMaskElement = idOfMaskElement
-        this.material3 = material3
         this.registry = registry
         this.onStateChanged = onStateChanged
     }
@@ -47,6 +38,6 @@ class State {
     }
 
     fun copy(): State {
-        return State(activity!!, mask, idOfMaskElement, material3, registry, onStateChanged)
+        return State(activity!!, mask, idOfMaskElement,  registry, onStateChanged)
     }
 }

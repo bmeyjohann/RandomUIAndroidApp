@@ -9,9 +9,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -23,21 +25,23 @@ import com.example.myapplication.ui.theme.*
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import kotlin.random.Random
 
 
 class MainActivity : ComponentActivity() {
 
+    // Needed to be able to invoke state change from Connection class
     var triggerNextState: () -> Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val windowInsetsController = ViewCompat.getWindowInsetsController(window.decorView) ?: return
-        // Configure the behavior of the hidden system bars
+        // Configure behavior of hidden system bars
         windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        // Hide both the status bar and the navigation bar
+        // Hide status bar and navigation bar
         windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
-
+        // Dataset collection is hard with screen turned off
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
         setContent {
@@ -51,6 +55,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun RandomApp(activity: MainActivity) {
     var state by remember { mutableStateOf(State(activity)) }
+    val outerAlignment by remember { mutableStateOf(randomHorizontalAlignment()) }
+    val innerAlignment by remember { mutableStateOf(randomHorizontalAlignment()) }
+    val showTopAppBar by remember { mutableStateOf(probToBool(probTopAppBar)) }
+
     state.onStateChanged = {
         state = state.copy()
     }
@@ -70,49 +78,54 @@ fun RandomApp(activity: MainActivity) {
         colorScheme = scheme
     ) {
         Scaffold(
-            topBar = { RandomTopAppBar(state) },
+            topBar = { if(showTopAppBar) RandomTopAppBar(state) },
             floatingActionButton = { RandomFloatingActionButton(state) },
             floatingActionButtonPosition = FabPosition.End,
             bottomBar = { RandomBottomBar(state) },
             content = {
                 Column(
-                    modifier = Modifier.padding(10.dp, 64.dp, 10.dp, 10.dp)
+                    modifier = Modifier
+                        .padding(10.dp, if(showTopAppBar) 64.dp else 10.dp, 10.dp, 0.dp)
+                        .fillMaxSize(1f),
+                    horizontalAlignment = outerAlignment
                 ) {
-                    if (debug) {
-                        Button(
-                            onClick = {
-                                activity.recreate()
-                            },
-                            content = {
-                                Text(text = "Recreate Activity.", color = Color.White)
-                            },
-                            colors = ButtonDefaults.buttonColors(Color.Black)
-                        )
-                        Button(
-                            onClick = {
-                                state.nextState()
-                            },
-                            content = {
-                                Text(text = "Next State", color = Color.White)
-                            },
-                            colors = ButtonDefaults.buttonColors(Color.Black)
-                        )
-                        Button(
-                            onClick = {
-                                Log.d(
-                                    "screenshot",
-                                    screenshot(activity.window.decorView.rootView).toString()
-                                )
-                            },
-                            content = {
-                                Text(text = "Screenshot", color = Color.White)
-                            },
-                            colors = ButtonDefaults.buttonColors(Color.Black)
-                        )
-                    }
+                    Column(
+                        horizontalAlignment = innerAlignment
+                    ) {
+                        if (debug) {
+                            Button(
+                                onClick = {
+                                    activity.recreate()
+                                },
+                                content = {
+                                    Text(text = "Recreate Activity", color = Color.White)
+                                },
+                                colors = ButtonDefaults.buttonColors(Color.Black)
+                            )
+                            Button(
+                                onClick = {
+                                    state.nextState()
+                                },
+                                content = {
+                                    Text(text = "Next State", color = Color.White)
+                                },
+                                colors = ButtonDefaults.buttonColors(Color.Black)
+                            )
+                            Button(
+                                onClick = {
+                                    debug = false
+                                    activity.recreate()
+                                },
+                                content = {
+                                    Text(text = "Turn Off Debug", color = Color.White)
+                                },
+                                colors = ButtonDefaults.buttonColors(Color.Black)
+                            )
+                        }
 
-                    for (index in 0..10) {
-                        RandomIE(state = state)
+                        for (index in 0..13) {
+                            RandomIE(state = state)
+                        }
                     }
                 }
             }
