@@ -3,41 +3,32 @@ package com.example.myapplication
 
 class State {
     var mask = false
-    var idOfMaskElement = -1
+    var idOfMaskElement = 0
 
-    private var activity: MainActivity?
     var registry = Registry()
 
     var onStateChanged: () -> Unit = {}
 
-    constructor(activity: MainActivity) {
-        this.activity = activity
-
-        this.activity!!.triggerNextState = {
-            this.nextState()
-        }
-
-        registry.registerElement("screen")
-    }
+    constructor()
 
     // copy constructor
-    constructor(activity: MainActivity, mask: Boolean, idOfMaskElement: Int, registry: Registry, onStateChanged: () -> Unit) {
-        this.activity = activity
-        this.mask = mask
-        this.idOfMaskElement = idOfMaskElement
-        this.registry = registry
-        this.onStateChanged = onStateChanged
+    constructor(state: State) {
+        this.mask = state.mask
+        this.idOfMaskElement = state.idOfMaskElement
+        this.registry = state.registry
+        this.onStateChanged = state.onStateChanged
     }
 
     fun nextState() {
         if (!mask) {
             mask = true
+        } else {
+            this.idOfMaskElement++
         }
-        this.idOfMaskElement++
         onStateChanged()
     }
 
     fun copy(): State {
-        return State(activity!!, mask, idOfMaskElement,  registry, onStateChanged)
+        return State(this)
     }
 }

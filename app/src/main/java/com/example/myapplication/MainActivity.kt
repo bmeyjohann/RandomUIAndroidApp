@@ -27,11 +27,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import kotlin.random.Random
 
+var debug = false
 
 class MainActivity : ComponentActivity() {
-
-    // Needed to be able to invoke state change from Connection class
-    var triggerNextState: () -> Unit = {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +52,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RandomApp(activity: MainActivity) {
-    var state by remember { mutableStateOf(State(activity)) }
+    var state by remember { mutableStateOf(State()) }
     val outerAlignment by remember { mutableStateOf(randomHorizontalAlignment()) }
     val innerAlignment by remember { mutableStateOf(randomHorizontalAlignment()) }
     val showTopAppBar by remember { mutableStateOf(probToBool(probTopAppBar)) }
@@ -133,7 +131,7 @@ fun RandomApp(activity: MainActivity) {
     }
 
     if (connection == null || connection!!.isClosed()) {
-        connection = DatasetConnection(state, activity)
+        connection = Connection(state, activity)
     } else {
         connection!!.setState(state)
     }

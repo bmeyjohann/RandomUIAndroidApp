@@ -13,9 +13,9 @@ import java.io.PrintWriter
 import java.net.ServerSocket
 import java.net.Socket
 
-var connection: DatasetConnection? = null
+var connection: Connection? = null
 
-class DatasetConnection: AutoCloseable {
+class Connection: AutoCloseable {
 
     private var port = 1280
 
@@ -35,12 +35,12 @@ class DatasetConnection: AutoCloseable {
 
         MainScope().launch {
             withContext(Dispatchers.IO) {
-                this@DatasetConnection.listenForever()
+                this@Connection.listen()
             }
         }
     }
 
-    private fun listenForever() {
+    private fun listen() {
         while (true) {
             this.establishConnection()
 
@@ -48,12 +48,12 @@ class DatasetConnection: AutoCloseable {
 
             if(request.get("header").equals("ready?")) {
                 this.sendResponse("ready!")
-            } else if(request.get("header").equals("masks?")) {
-                this.sendResponse("masks!", this.state!!.registry.data)
+            } else if(request.get("header").equals("classes?")) {
+                this.sendResponse("classes!", this.state!!.registry.data)
             } else if(request.get("header").equals("next state?")) {
                 this.state!!.nextState()
-                this.sendResponse("next state!", JSONObject().put("masks", this.state!!.mask).put("idOfMaskElement", this.state!!.idOfMaskElement))
-            } else if(request.get("header").equals("randomize")) {
+                this.sendResponse("next state!")
+            } else if(request.get("header").equals("randomize?")) {
                 this.sendResponse("randomize!")
             }
 

@@ -58,13 +58,6 @@ fun Modifier.onCondition(condition: Boolean, modifier: Modifier): Modifier {
     }
 }
 
-fun screenshot(view: View): Bitmap {
-    return Bitmap.createBitmap(view.width, view.height,
-        Bitmap.Config.ARGB_8888).applyCanvas {
-        view.draw(this)
-    }
-}
-
 fun clipIntInclusive(value: Int, lowerBound: Int, upperBound: Int): Int {
     return if (value < lowerBound) {
         lowerBound
