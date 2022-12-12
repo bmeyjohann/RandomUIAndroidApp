@@ -1,5 +1,6 @@
-package com.example.myapplication
+// Copyright 2022 Benjamin Meyjohann
 
+package com.example.myapplication
 
 class State {
     var mask = false

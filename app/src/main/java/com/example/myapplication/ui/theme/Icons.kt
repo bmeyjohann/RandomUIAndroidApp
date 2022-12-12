@@ -1,3 +1,5 @@
+// Copyright 2022 Benjamin Meyjohann
+
 package com.example.myapplication.ui.theme
 
 import androidx.compose.material.icons.Icons

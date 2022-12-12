@@ -1,3 +1,5 @@
+// Copyright 2022 Benjamin Meyjohann
+
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.example.myapplication
